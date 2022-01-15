@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Letters game</title>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;400;500&display=swap" rel="stylesheet">    
+
+</head>
+<body>
+
+    <div id="intro-page">
+
+    <h1>Welcome to the letters game</h1>
+
+    <form id="game-settings" action="#" method="GET">
+        <label for="numWord">How many letters do you want to play with?</label>
+        <select name="numWord" id="numWord">
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>
+        </select>
+
+
+
+        <br>
+
+        <label for="numTries">How many tries do you want to have?</label>
+        <select name="numTries" id="numTries">
+            <option value="4">4</option>
+            <option value="6">6</option>
+            <option value="8">8</option>
+            <option value="10">10</option>
+        </select>
+
+        <br>
+
+        <label for="btn-play">Click here to start game</label>
+        <button id="btn-play">play</button>
+
+    </form>
+
+    </div>
+
+    <div id="game-page">
+        <h1>START GUESSING THE WORD</h1>
+
+        <div class="info">
+
+        <h3 class="letters">Number of letters:</h3>
+        <h3 class="attempts">Number of attempts left:</h3>
+
+        </div>
+
+
+        <form id="guessForm" action="#" autocomplete="off">
+            <input type="text" name="guessedWord">
+            <button id="btn-submit">Submit</button>
+        </form>
+    </div>
+
+
+
+<script>
+
+    const T = "<%=test%>"
+</script>
+
+<script src="game.js"></script>
+
+
+
+    
+<script>
+
+const introSec = document.querySelector("#intro-page")
+const guessForm = document.querySelector("#guessForm")
+
+const h3Letters = document.querySelector(".letters")
+const h3Attempts = document.querySelector(".attempts")
+
+const gameSec = document.querySelector("#game-page")
+gameSec.style.display = "none"
+
+const playBtn = document.getElementById("btn-play")
+
+const gameSettings = document.getElementById("game-settings")
+const submitBtn = document.getElementById("btn-submit")
+
+let hiddenWord = ""
+let numTries = 0
+let numWord = ""
+let currTries = 0
+
+playBtn.addEventListener("click", (e) => {
+    e.preventDefault()
+    introSec.style.display = "none"
+    gameSec.style.display = ""
+    numTries = Number(gameSettings.numTries.value)
+    numWord = gameSettings.numWord.value
+    hiddenWord = generateWord(numWord)
+    console.log(hiddenWord)
+
+    h3Letters.innerHTML = `Number of letters: ${numWord}`
+    h3Attempts.innerHTML = `Number of attempts: ${currTries}/${numTries}`
+
+
+})
+
+submitBtn.addEventListener("click", (e) => {
+
+    const guessedWord = guessForm.guessedWord.value
+
+    if (guessedWord.length !== Number(numWord)) {
+        e.preventDefault()
+        alert(`Please write a word with ${numWord} letters`)
+        guessForm.guessedWord.value = ""
+        return
+    }
+
+    console.log(numWord,numTries, hiddenWord)
+
+    currTries++
+    h3Attempts.innerHTML = `Number of attempts: ${currTries}/${numTries}`
+
+    if (guessedWord === hiddenWord) {
+        alert(`Congrats, you guessed the word: ${guessedWord}`)
+        return
+    }
+
+    else if (currTries >= numTries) {
+        alert (`You lost, the correct word was: ${hiddenWord}`)
+        return
+    }
+
+    e.preventDefault()
+
+
+    const wordBlockEl = document.createElement("div")
+    wordBlockEl.classList.add("word-block")
+    gameSec.appendChild(wordBlockEl)
+
+    for (let i = 0; i < hiddenWord.length; i++) {
+        const letterEl = document.createElement("div")
+        letterEl.innerHTML = guessedWord[i]
+        letterEl.classList.add("letter")
+
+        if (guessedWord[i] === hiddenWord[i]) {
+            letterEl.classList.add("letter-fully-right")
+        }
+        else if (hiddenWord.includes(guessedWord[i])) {
+            letterEl.classList.add("letter-partly-right")
+        }
+        else {}
+        wordBlockEl.appendChild(letterEl)
+    }
+
+    guessForm.guessedWord.value = ""
+
+    
+
+})
+
+
+
+const generateWord = (numWord) => {
+    let hiddenWords = "<%=randomWords(150)%>"
+    hiddenWords = hiddenWords.split(",")
+    console.log(hiddenWords)
+    for (let word of hiddenWords) {
+        if (word.length === Number(numWord)) {
+            return word
+        }
+    }
+}
+
+
+
+
+
+
+
+
+</script>
+
+</body>
+</html>
